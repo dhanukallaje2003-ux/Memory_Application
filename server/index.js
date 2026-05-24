@@ -22,6 +22,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true });
+});
+
 app.use("/api", async (req, res, next) => {
   try {
     await connectDatabase();
