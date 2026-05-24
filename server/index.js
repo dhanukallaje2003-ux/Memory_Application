@@ -3,12 +3,18 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import PDFDocument from "pdfkit";
 import { ObjectId } from "mongodb";
+import path from "path";
+import { fileURLToPath } from "url";
 import { connectDatabase, getDb, hashPassword, verifyPassword } from "./db.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "your-refresh-secret-change-in-production";
+const isVercel = Boolean(process.env.VERCEL);
 
 app.use(cors({
   origin: true,
@@ -16,8 +22,15 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Initialize database connection
-connectDatabase().catch(console.error);
+app.use("/api", async (req, res, next) => {
+  try {
+    await connectDatabase();
+    next();
+  } catch (error) {
+    console.error("Database request setup failed:", error);
+    res.status(503).json({ error: "Database is not available" });
+  }
+});
 
 // JWT utility functions
 function generateAccessToken(user) {
@@ -557,6 +570,20 @@ app.post("/api/auth/refresh", authenticateRefreshToken, async (req, res) => {
   }
 });
 
+app.get("/api/auth/me", authenticateToken, async (req, res) => {
+  try {
+    const user = await getUserFromTokenPayload(req.user);
+    if (!user) {
+      return res.status(401).json({ error: "User not found" });
+    }
+
+    res.json({ user: mapUser(user) });
+  } catch (error) {
+    console.error("Get current user error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // Protected routes
 app.get("/api/memories", authenticateToken, async (req, res) => {
   try {
@@ -881,7 +908,27 @@ app.post("/api/documentation/export", authenticateToken, async (req, res) => {
   }
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (!isVercel) {
+  // Serve static files from the React build in production
+  const distPath = path.join(__dirname, "../dist");
+  app.use(express.static(distPath, {
+    maxAge: "1d",
+    etag: false
+  }));
+
+  // SPA fallback - serve index.html for any non-API route
+  app.get("/{*splat}", (req, res) => {
+    res.sendFile(path.join(distPath, "index.html"), (err) => {
+      if (err) {
+        res.status(404).json({ error: "Not found" });
+      }
+    });
+  });
+
+  // Start server
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+export default app;

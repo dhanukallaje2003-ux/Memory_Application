@@ -13,7 +13,12 @@ type Message = {
   timestamp: Date;
 };
 
-const mapMessage = (message: ChatMessageRecord | any): Message => ({
+type StoredChatMessage = ChatMessageRecord & {
+  _id?: string;
+  created_at?: string;
+};
+
+const mapMessage = (message: StoredChatMessage): Message => ({
   id:
     message.id ||
     message._id ||

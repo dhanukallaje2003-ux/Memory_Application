@@ -6,20 +6,34 @@ const DB_NAME = "memory_companion";
 
 let client;
 let db;
+let connectionPromise;
 
 export async function connectDatabase() {
-  try {
-    client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    db = client.db(DB_NAME);
-    console.log("Connected to MongoDB");
-
-    await ensureIndexes();
-    await seedData();
-  } catch (error) {
-    console.error("Failed to connect to MongoDB:", error);
-    throw error;
+  if (db) {
+    return db;
   }
+
+  if (!connectionPromise) {
+    connectionPromise = (async () => {
+      client = new MongoClient(MONGODB_URI, {
+        serverSelectionTimeoutMS: 10000,
+      });
+      await client.connect();
+      db = client.db(DB_NAME);
+      console.log("Connected to MongoDB");
+
+      await ensureIndexes();
+      await seedData();
+      return db;
+    })().catch((error) => {
+      connectionPromise = undefined;
+      client = undefined;
+      console.error("Failed to connect to MongoDB:", error);
+      throw error;
+    });
+  }
+
+  return connectionPromise;
 }
 
 export function getDb() {
@@ -129,6 +143,9 @@ export async function verifyPassword(password, hashedPassword) {
 export async function closeDatabase() {
   if (client) {
     await client.close();
+    client = undefined;
+    db = undefined;
+    connectionPromise = undefined;
     console.log("Database connection closed");
   }
 }
