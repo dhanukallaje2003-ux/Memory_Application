@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 39 50% 97%;
+    --foreground: 28 30% 15%;
+
+    --card: 39 40% 95%;
+    --card-foreground: 28 30% 15%;
+
+    --popover: 39 50% 97%;
+    --popover-foreground: 28 30% 15%;
+
+    --primary: 32 95% 55%;
+    --primary-foreground: 39 50% 97%;
+
+    --secondary: 145 20% 88%;
+    --secondary-foreground: 150 25% 25%;
+
+    --muted: 35 25% 91%;
+    --muted-foreground: 28 15% 50%;
+
+    --accent: 32 80% 90%;
+    --accent-foreground: 32 60% 30%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 35 25% 87%;
+    --input: 35 25% 87%;
+    --ring: 32 95% 55%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 39 40% 95%;
+    --sidebar-foreground: 28 30% 15%;
+    --sidebar-primary: 32 95% 55%;
+    --sidebar-primary-foreground: 39 50% 97%;
+    --sidebar-accent: 32 80% 90%;
+    --sidebar-accent-foreground: 32 60% 30%;
+    --sidebar-border: 35 25% 87%;
+    --sidebar-ring: 32 95% 55%;
+
+    /* Custom tokens */
+    --warm-glow: 39 100% 95%;
+    --sage: 145 20% 70%;
+    --sage-light: 145 20% 88%;
+    --honey: 40 95% 62%;
+    --honey-dark: 32 80% 45%;
+    --cream: 39 50% 97%;
+    --warm-gray: 28 10% 40%;
+    --chat-user: 32 80% 90%;
+    --chat-ai: 145 20% 92%;
+    --mood-happy: 45 100% 60%;
+    --mood-calm: 195 60% 60%;
+    --mood-sad: 220 40% 60%;
+    --mood-anxious: 15 80% 60%;
+    --mood-angry: 0 70% 55%;
+  }
+
+  .dark {
+    --background: 28 25% 8%;
+    --foreground: 39 30% 90%;
+
+    --card: 28 20% 12%;
+    --card-foreground: 39 30% 90%;
+
+    --popover: 28 20% 12%;
+    --popover-foreground: 39 30% 90%;
+
+    --primary: 32 95% 55%;
+    --primary-foreground: 28 25% 8%;
+
+    --secondary: 150 15% 18%;
+    --secondary-foreground: 145 20% 80%;
+
+    --muted: 28 15% 18%;
+    --muted-foreground: 35 15% 55%;
+
+    --accent: 32 40% 20%;
+    --accent-foreground: 32 80% 80%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 28 15% 20%;
+    --input: 28 15% 20%;
+    --ring: 32 95% 55%;
+
+    --sidebar-background: 28 20% 10%;
+    --sidebar-foreground: 39 30% 90%;
+    --sidebar-primary: 32 95% 55%;
+    --sidebar-primary-foreground: 28 25% 8%;
+    --sidebar-accent: 32 40% 20%;
+    --sidebar-accent-foreground: 32 80% 80%;
+    --sidebar-border: 28 15% 20%;
+    --sidebar-ring: 32 95% 55%;
+
+    --warm-glow: 28 30% 12%;
+    --sage: 150 15% 35%;
+    --sage-light: 150 15% 18%;
+    --honey: 40 80% 50%;
+    --honey-dark: 32 70% 35%;
+    --cream: 28 25% 8%;
+    --warm-gray: 28 10% 60%;
+    --chat-user: 32 40% 18%;
+    --chat-ai: 150 15% 16%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--honey)));
+  }
+
+  .bg-warm-glow {
+    background: radial-gradient(ellipse at top, hsl(var(--warm-glow)), hsl(var(--background)));
+  }
+
+  .bg-hero-gradient {
+    background: linear-gradient(180deg, hsl(var(--warm-glow)) 0%, hsl(var(--background)) 100%);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px -12px hsl(var(--primary) / 0.2);
+  }
+
+  .chat-bubble-user {
+    background: hsl(var(--chat-user));
+  }
+
+  .chat-bubble-ai {
+    background: hsl(var(--chat-ai));
+  }
+}
